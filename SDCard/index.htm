@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!-- 
+  Created with Arduino - 09.12.2015 14:02:04
+  Project      : GrowBox v0.7.7 (release.firmware.web)
+  Author       : Michele Valentini - Red Sheep Labs
+  Description  : GrowBox Controller with EmonCMS interaction
+  Website	   : www.yarosia.it
+  Email		   : valentini.michele@gmail.com
+  Copyright (C): 2015-2018 Michele Valentini (www.yarosia.it - Red Sheep Labs)
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<meta charset="utf-8" /> 
+<html>
+    <head>
+        <title>Arduino GrowBox</title>
+        <script>
+		strRELAY1 = "";
+		strRELAY2 = "";
+		strRELAY3 = "";
+		strRELAY4 = "";
+		var RELAY1_state = 0;
+		var RELAY2_state = 0;
+		var RELAY3_state = 0;
+		var RELAY4_state = 0;
+		function GetArduinoIO(){
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function(){
+				if (this.readyState == 4) {
+					if (this.status == 200) {
+						if (this.responseXML != null) {
+							// XML file received - contains analog values, switch values and RELAY states
+							var count;
+							// get analog inputs
+							var num_an = this.responseXML.getElementsByTagName('analog').length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("analog")[count].innerHTML =
+									this.responseXML.getElementsByTagName('analog')[count].childNodes[0].nodeValue;
+							}
+							
+							// Relay 1
+							if (this.responseXML.getElementsByTagName('RELAY')[0].childNodes[0].nodeValue === "on") {
+								document.getElementById("RELAY1").innerHTML = "Light is ON";
+								RELAY1_state = 1;
+							}
+							else {
+								document.getElementById("RELAY1").innerHTML = "Light is OFF";
+								RELAY1_state = 0;
+							}
+							// Relay 2
+							if (this.responseXML.getElementsByTagName('RELAY')[1].childNodes[0].nodeValue === "on") {
+								document.getElementById("RELAY2").innerHTML = "Heater is ON";
+								RELAY2_state = 1;
+							}
+							else {
+								document.getElementById("RELAY2").innerHTML = "Heater is OFF";
+								RELAY2_state = 0;
+							}
+							// Relay 3
+							if (this.responseXML.getElementsByTagName('RELAY')[2].childNodes[0].nodeValue === "on") {
+								document.getElementById("RELAY3").innerHTML = "Fan is ON";
+								RELAY3_state = 1;
+							}
+							else {
+								document.getElementById("RELAY3").innerHTML = "Fan is OFF";
+								RELAY3_state = 0;
+							}
+							// Relay 4
+							if (this.responseXML.getElementsByTagName('RELAY')[3].childNodes[0].nodeValue === "on") {
+								document.getElementById("RELAY4").innerHTML = "Mist is ON";
+								RELAY4_state = 1;
+							}
+							else {
+								document.getElementById("RELAY4").innerHTML = "Mist is OFF";
+								RELAY4_state = 0;
+							}
+						}
+					}
+				}
+			}
+			// send HTTP GET request with RELAYs to switch on/off if any
+			request.open("GET", "ajax_inputs" + strRELAY1 + strRELAY2 + strRELAY3 + strRELAY4 + nocache, true);
+			request.send(null);
+			setTimeout('GetArduinoIO()', 1000);
+			strRELAY1 = "";
+			strRELAY2 = "";
+			strRELAY3 = "";
+			strRELAY4 = "";
+		}
+
+		function GetButton1(){
+			if (RELAY1_state === 1) {
+				RELAY1_state = 0;
+				strRELAY1 = "&RELAY1=0";
+			}
+			else {
+				RELAY1_state = 1;
+				strRELAY1 = "&RELAY1=1";
+			}
+		}
+		function GetButton2(){
+			if (RELAY2_state === 1) {
+				RELAY2_state = 0;
+				strRELAY2 = "&RELAY2=0";
+			}
+			else {
+				RELAY2_state = 1;
+				strRELAY2 = "&RELAY2=1";
+			}
+		}
+		function GetButton3(){
+			if (RELAY3_state === 1) {
+				RELAY3_state = 0;
+				strRELAY3 = "&RELAY3=0";
+			}
+			else {
+				RELAY3_state = 1;
+				strRELAY3 = "&RELAY3=1";
+			}
+		}
+		function GetButton4(){
+			if (RELAY4_state === 1) {
+				RELAY4_state = 0;
+				strRELAY4 = "&RELAY4=0";
+			}
+			else {
+				RELAY4_state = 1;
+				strRELAY4 = "&RELAY4=1";
+			}
+		}
+	</script>
+	<style>
+		.IO_box {
+			float: left;
+			margin: 0 20px 20px 0;
+			border: 1px solid blue;
+			padding: 0 5px 0 5px;
+			width: 160px;
+		}
+		h1 {
+			font-size: 120%;
+			color: blue;
+			margin: 0 0 10px 0;
+		}
+		h2 {
+			font-size: 85%;
+			color: #5734E6;
+			margin: 5px 0 5px 0;
+		}
+		p, form, button {
+			font-size: 80%;
+			color: #252525;
+		}
+		.small_text {
+			font-size: 70%;
+			color: #737373;
+		}
+	</style>
+    </head>
+    <body onload="GetArduinoIO()">
+        <h1>Arduino GrowBox Controller</h1>
+                <div class="IO_box">
+       <p> <a href="/">Home</a></p>
+       <p> <a href="/download/">Log Download</a></p>
+       <p> <a href="/parameters/">Current Settings</a></p>
+       <p> <a href="/settings/">Settings</a></p>
+        </div>
+        <div class="IO_box">
+			<h2>Environmental parameters</h2>
+			<p>Temperature: <span class="analog">...</span> °C</p>
+			<p>Humidity: <span class="analog">...</span> %HR</p>
+			<p>Internal Temperature: <span class="analog">...</span> %</p>
+			<p>Ground Temperature: <span class="analog">...</span> °C</p>
+			<p>External Temperature: <span class="analog">...</span> °C</p>
+			<p>External Humidity: <span class="analog">...</span> %HR</p>
+		</div>
+		
+		
+		<div class="IO_box">
+			<h2>Relays Control</h2>
+			<button type="button" id="RELAY1" onclick="GetButton1()">Light is OFF</button><br /><br />
+			<button type="button" id="RELAY2" onclick="GetButton2()">Heater is OFF</button><br /><br />
+			<button type="button" id="RELAY3" onclick="GetButton3()">Fan is OFF</button><br /><br />
+			<button type="button" id="RELAY4" onclick="GetButton4()">Mist is OFF</button><br /><br />
+
+		</div>
+    </body>
+</html>

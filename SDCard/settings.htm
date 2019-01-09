@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<!-- 
+  Created with Arduino - 09.12.2015 14:02:04
+  Project      : GrowBox v0.7.7 (release.firmware.web)
+  Author       : Michele Valentini - Red Sheep Labs
+  Description  : GrowBox Controller with EmonCMS interaction
+  Website	   : www.yarosia.it
+  Email		   : valentini.michele@gmail.com
+  Copyright (C): 2015-2018 Michele Valentini (www.yarosia.it - Red Sheep Labs)
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<meta charset="utf-8" /> 
+<html>
+    <head>
+        <title>Arduino GrowBox - Environmental Settings</title>
+        <script language="javascript">
+function checkInput(ob) {
+  var invalidChars = /[^0-9]/gi
+  if(invalidChars.test(ob.value)) {
+            ob.value = ob.value.replace(invalidChars,"");
+      }
+}
+</script>
+<script language="javascript">
+document.getElementById("dhcpBox").onchange = function() {
+  document.getElementById("networkBox").disabled = !this.checked;
+};
+</script>
+  <style>
+    .IO_box {
+      float: left;
+      margin: 0 20px 20px 0;
+      border: 1px solid red;
+      padding: 0 5px 0 5px;
+      width: 200px;
+    }
+    h1 {
+      font-size: 120%;
+      color: red; 
+      margin: 0 0 10px 0;
+    }
+    h2 {
+      font-size: 85%;
+      color: red;
+      margin: 5px 0 5px 0;
+    }
+    p, form, button {
+      font-size: 80%;
+      color: #252525;
+    }
+    .small_text {
+      font-size: 70%;
+      color: #737373;
+    }
+    .IPtext {
+        width: 30px;
+    }
+    .envText{
+      width: 30px;
+    }
+    .rtcText{
+      width: 30px;
+    }
+
+  </style>
+    </head>
+    <body>
+        <h1>Arduino GrowBox Controller</h1>
+                <div class="IO_box">
+       <p> <a href="/">Home</a></p>
+       <p> <a href="/download/">Log Download</a></p>
+       <p> <a href="/parameters/">Current Settings</a></p>
+       <p> <a href="/settings/">Settings</a></p>
+        </div>
+        <div class="IO_box">
+
+
+      <h2>Environmental parameters</h2>
+      <form method=get action="/temperature/" enctype=text/plain>
+      <table><tr><td>
+      <p>Min Temperature: </p></td><td><input type="text" name="minTemp" value=25 class="envText" onkeyup="checkInput(this)"/> °C </td></tr><tr><td></td><td> <i>The heater will start if temperature is under this threshold</i></p></td></tr>
+      <tr><td><p>Max Temperature: </p></td><td><input type="text" name="maxTemp" value=30 class="envText" onkeyup="checkInput(this)"/> °C </td></tr><tr><td></td><td> <i>The heater will stop if temperature is over this threshold</i></p></td></tr><tr><td></td><td>
+      <input type=submit value=Set></td></tr></table>
+      </form>
+
+      <form method=get action="/humidity/" enctype=text/plain>
+      <table><tr><td>
+      <p>Min Humidity: </p></td><td><input type="text" name="minHum" value=40 class="envText" onkeyup="checkInput(this)"/> %RH </td></tr><tr><td></td><td> <i>The mist generator will start if %RH is under this threshold</i></p></td></tr><tr><td>
+      <p>Max Humidity: </p></td><td><input type="text" name="maxHum" value=80 class="envText" onkeyup="checkInput(this)"/> %RH </td></tr><tr><td></td><td> <i>The mist geerator will stop if %RH is over this threshold</i></p></td></tr><tr><td></td><td>
+      <input type=submit  value=Set></td></tr></table>
+      </form>
+      <form method=get action="/groundt/" enctype=text/plain>
+      <table><tr><td>
+      <p>Min Ground Temp: </p></td><td><input type="text" name="minGroundT" value=30 class="envText" onkeyup="checkInput(this)"/> °C </td></tr><tr><td></td><td> <i>The heater will start if ground temperature and internal temperature are below thresholds</i></p></td></tr><tr><td>
+      <p>Max Ground Temp: </p></td><td><input type="text" name="maxGroundT" value=35 class="envText" onkeyup="checkInput(this)"/> °C </td></tr><tr><td></td><td> <i>The heater will stop if ground temperature is above thresholds</i></p></td></tr><tr><td></td><td>
+      <input type=submit  value=Set></td></tr></table>
+      </form>
+    </div>
+    
+    
+    <div class="IO_box">
+      <h2>Lights</h2>
+      <form method=get action="/lights/" enctype=text/plain>
+      <table><tr><td>
+       <label for=onhour>Start Hour:</label></td><td>
+          <select name=onhour>
+          <option value=0>0</option>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=6>6</option>
+          <option value=7>7</option>
+          <option value=8>8</option>
+          <option value=9>9</option>
+          <option value=10>10</option>
+          <option value=11>11</option>
+          <option value=12>12</option>
+          <option value=13>13</option>
+          <option value=14>14</option>
+          <option value=15>15</option>
+          <option value=16>16</option>
+          <option value=17>17</option>
+          <option value=18>18</option>
+          <option value=19>19</option>
+          <option value=20>20</option>
+          <option value=21>21</option>
+          <option value=22>22</option>
+          <option value=23>23</option>
+          </select><br /></td></tr><tr><td>
+          <label for=onminute>Start Minute:</label></td><td>
+          <select name=onminute>
+          <option value=0>0</option>
+          <option value=10>10</option>
+          <option value=20>20</option>
+          <option value=30>30</option>
+          <option value=40>40</option>
+          <option value=50>50</option>
+          </select><br /></td></tr><tr><td>
+          <label for=offhour>Stop Hour:</label></td><td>
+          <select name=offhour>
+          <option value=0>0</option>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=6>6</option>
+          <option value=7>7</option>
+          <option value=8>8</option>
+          <option value=9>9</option>
+          <option value=10>10</option>
+          <option value=11>11</option>
+          <option value=12>12</option>
+          <option value=13>13</option>
+          <option value=14>14</option>
+          <option value=15>15</option>
+          <option value=16>16</option>
+          <option value=17>17</option>
+          <option value=18>18</option>
+          <option value=19>19</option>
+          <option value=20>20</option>
+          <option value=21>21</option>
+          <option value=22>22</option>
+          <option value=23>23</option>
+          </select><br /></td></tr><tr><td>
+          <label for=offminute>Stop Minute:</label></td><td>
+          <select name=offminute>
+          <option value=0>0</option>
+          <option value=10>10</option>
+          <option value=20>20</option>
+          <option value=30>30</option>
+          <option value=40>40</option>
+          <option value=50>50</option>
+          </select><br /></td></tr><tr><td></td><td>
+          <input type=submit value=Set></td></tr></table>
+          </form>
+
+    </div>
+
+        <div class="IO_box">
+      <h2>Fans - Lights ON</h2>
+      <form method=get action="/fans/" enctype=text/plain>
+      <table>
+      <tr><td>
+      <label for=fanDuration>Duration (minutes):</label></td><td>
+          <select name=fanDuration>
+          <option value=0>0</option>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=10>10</option>
+          </select></td><td>min.</td></tr>
+          <tr><td>
+                <label for=fanInterval>Interval:</label></td><td>
+          <select name=fanInterval>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=6>6</option>
+          <option value=12>12</option>
+          <option value=24>24</option>
+          </select><br /></td><td>hours</td></tr><tr><td></td></tr>
+          <tr><td>Always ON: </td><td><input type="checkbox" id="alwaysON" name="always" value=1></td></tr>
+    <tr><td></td><td>
+          <input type=submit value=Set></td></tr>
+          </table>
+          </form>
+
+    </div>
+        <div class="IO_box">
+      <h2>Fans - Lights OFF</h2>
+      <form method=get action="/fansLO/" enctype=text/plain>
+      <table>
+      <tr><td>
+      <label for=fanDuration>Duration (minutes):</label></td><td>
+          <select name=fanDuration>
+          <option value=0>0</option>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=10>10</option>
+          </select></td><td>min.</td></tr>
+          <tr><td>
+                <label for=fanInterval>Interval:</label></td><td>
+          <select name=fanInterval>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=6>6</option>
+          <option value=12>12</option>
+          <option value=24>24</option>
+          </select><br /></td><td>hours</td></tr><tr><td></td></tr>
+           <tr><td>Always ON: </td><td><input type="checkbox" id="alwaysON" name="always" value=1></td></tr>
+    <tr><td></td><td>
+          <input type=submit value=Set></td></tr>
+          </table>
+          </form>
+
+    </div>
+    <div class="IO_box">
+    <h2>Network</h2>
+    <form method=get action="/network/" enctype=text/plain>
+    <table>
+    <tr>
+    <td><p>IP Address:</p></td><td><input type="text" id="networkBox" class="IPtext" onkeyup="checkInput(this)" maxlength="3" name="ip1"></td><td> <input type="text" id="networkBox" class="IPtext" onkeyup="checkInput(this)" maxlength="3" name="ip2"></td><td> <input type="text" class="IPtext" id="networkBox"  onkeyup="checkInput(this)" maxlength="3" name="ip3"></td><td> <input type="text" class="IPtext" id="networkBox"  onkeyup="checkInput(this)" maxlength="3" name="ip4"></td></tr>
+    <tr><td>
+    <p>Subnet Mask:</p></td><td><input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="sn1"></td><td> <input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="sn2"> </td><td><input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="sn3"></td><td> <input type="text" class="IPtext" id="networkBox"  onkeyup="checkInput(this)" maxlength="3" name="sn4"></td></tr>
+    <tr>
+    <td>
+    <p>Gateway:</p></td><td><input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="gw1"></td><td> <input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="gw2"></td><td> <input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="gw3"></td><td> <input type="text" class="IPtext"  id="networkBox" onkeyup="checkInput(this)" maxlength="3" name="gw4"></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td><input type=submit value=Set></td></tr>
+    </table>
+    </form>
+    </div>
+    <div class="IO_box">
+    <h2>DHCP</h2>
+        <form method=get action="/dhcp/" enctype=text/plain>
+    <table>
+
+    
+    <tr><td>DHCP: </td><td><input type="checkbox" id="dhcpBox" name="dhcp" value=1></td></tr>
+    <tr><td></td><td><input type=submit value=Set></td></tr>
+    </table>
+    </form>
+    </div>
+    <div class="IO_box">
+    <h2>Sampling And Transmission</h2>
+    <form method=get action="/sampling/" enctype=text/plain>
+    <table>
+    <tr><td>Sample Rate: </td><td> <select name=samplingRate>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=10>10</option>
+          <option value=15>15</option>
+          <option value=30>30</option>
+          </select></td><td>sec.</td></tr>
+    <tr><td>Transmission and Log Rate: </td><td> <select name=transmissionRate>
+          <option value=1>1</option>
+          <option value=2>2</option>
+          <option value=3>3</option>
+          <option value=4>4</option>
+          <option value=5>5</option>
+          <option value=10>10</option>
+          <option value=15>15</option>
+          <option value=30>30</option>
+          </select></td><td>min.</td></tr>
+    <tr><td></td><td><input type=submit value=Set></td></tr>
+    </table>
+    </form>
+    </div>
+
+
+    <div class="IO_box">
+    <h2>RTC</h2>
+    <form method=get action="/rtc/" enctype=text/plain>
+    <table>
+      <tr><td>Day: </td><td>
+<input type="text" class="rtcText"  id="rtcBox" onkeyup="checkInput(this)" maxlength="2" name="day">
+      </td></tr>
+      <tr><td>Month: </td><td>
+
+<input type="text" class="rtcText"  id="rtcBox" onkeyup="checkInput(this)" maxlength="2" name="month">
+      
+</td></tr>
+
+      <tr><td>Year: </td><td><input type="text" class="rtcText"  id="rtcBox" onkeyup="checkInput(this)" maxlength="4" name="year"></td></tr>
+      <tr><td>Hour: </td><td>    
+     <input type="text" class="rtcText"  id="rtcBox" onkeyup="checkInput(this)" maxlength="2" name="hour">
+          </select></td></tr>
+      <tr><td>Minute: </td><td><input type="text" class="rtcText"  id="rtcBox" onkeyup="checkInput(this)" maxlength="2" name="minute"></td></tr>
+      <tr><td>Second: </td><td><input type="text" class="rtcText"  id="rtcBox" onkeyup="checkInput(this)" maxlength="2" name="second"></td></tr>
+      <tr><td></td><td><input type = submit value=Set></td></tr>
+    </table>
+    </form>
+    </body>
+</html>
